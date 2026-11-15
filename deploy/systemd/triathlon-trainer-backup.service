@@ -1,0 +1,17 @@
+[Unit]
+Description=Sauvegarde de la base Triathlon Trainer
+
+[Service]
+Type=oneshot
+User=triathlon
+Group=triathlon
+Environment=TRI_DATA_DIR=/var/lib/triathlon-trainer
+Environment=TRI_BACKUP_KEEP_DAYS=30
+EnvironmentFile=-/etc/default/triathlon-trainer
+ExecStart=/opt/triathlon-trainer/deploy/backup.sh
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/triathlon-trainer

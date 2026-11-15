@@ -19,3 +19,16 @@ jobs:
           cache: pip
       - run: pip install -e ".[dev]"
       - run: pytest -q
+
+  deploy-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck deploy/*.sh
+      - name: systemd units
+        run: |
+          for u in deploy/systemd/*; do
+            systemd-analyze verify "$u" 2>&1 | grep -v "is not executable" | tee /tmp/out
+            ! grep -q . /tmp/out
+          done

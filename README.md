@@ -33,6 +33,18 @@ Pour l'utiliser depuis le téléphone sur le réseau local : `http://<ip-du-pc>:
 
 La base est stockée dans `./data/triathlon.db` ; autre emplacement : `TRI_DB_URL=sqlite:////chemin/vers/base.db`.
 
+## Héberger sur un Raspberry Pi
+
+Pour faire tourner l'appli en permanence sur un Raspberry Pi et y accéder depuis n'importe où (via Tailscale, en HTTPS, sans ouvrir de port) :
+
+```bash
+git clone https://github.com/Thibg-91/triathlon-trainer.git && cd triathlon-trainer
+./deploy/install.sh          # service systemd + sauvegardes quotidiennes
+./deploy/install.sh --serve  # publication HTTPS dans ton tailnet
+```
+
+Guide complet : [docs/raspberry-pi.md](docs/raspberry-pi.md).
+
 ## Tests
 
 ```bash
@@ -49,6 +61,8 @@ app/
   stats.py     # agrégats : volume hebdo, totaux, assiduité, allures
   templates/   # Jinja2 + htmx
   static/      # CSS, JS, icônes, manifest, service worker
+deploy/        # install.sh, sauvegarde/restauration, unités systemd
+docs/          # guide Raspberry Pi
 tests/
 ```
 
@@ -67,4 +81,4 @@ Régénérer le plan (changement de date ou de volume) conserve le journal et ra
 - [ ] Zones cardio et allures personnalisées (test VMA, CSS natation, FTP)
 - [ ] Déplacer / modifier une séance du plan
 - [ ] Saisie hors ligne avec synchronisation
-- [ ] Déploiement (Docker, Fly.io / Render)
+- [ ] Authentification (avant toute exposition publique)

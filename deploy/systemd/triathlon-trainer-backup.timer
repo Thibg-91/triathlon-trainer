@@ -1,0 +1,11 @@
+[Unit]
+Description=Sauvegarde quotidienne de la base Triathlon Trainer
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+RandomizedDelaySec=15min
+# Rattrape la sauvegarde si le Pi était éteint à l'heure prévue
+Persistent=true
+
+[Install]
+WantedBy=timers.target

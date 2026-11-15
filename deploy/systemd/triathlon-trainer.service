@@ -1,0 +1,38 @@
+[Unit]
+Description=Triathlon Trainer (FastAPI)
+Documentation=https://github.com/Thibg-91/triathlon-trainer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=triathlon
+Group=triathlon
+WorkingDirectory=/opt/triathlon-trainer
+
+# Valeurs par défaut, surchargeables dans /etc/default/triathlon-trainer
+Environment=TRI_DB_URL=sqlite:////var/lib/triathlon-trainer/triathlon.db
+Environment=TRI_HOST=127.0.0.1
+Environment=TRI_PORT=8000
+EnvironmentFile=-/etc/default/triathlon-trainer
+
+ExecStart=/opt/triathlon-trainer/.venv/bin/uvicorn app.main:app \
+    --host ${TRI_HOST} --port ${TRI_PORT} \
+    --proxy-headers --no-server-header
+Restart=on-failure
+RestartSec=3
+
+# Durcissement : l'appli ne peut écrire que dans son dossier de données
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+ReadWritePaths=/var/lib/triathlon-trainer
+
+[Install]
+WantedBy=multi-user.target
