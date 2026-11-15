@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Réglages · Triathlon Trainer{% endblock %}
+{% block heading %}Réglages{% endblock %}
+{% block content %}
+
+<form method="post" action="/settings" class="card settings-form">
+  <h2 class="section-title">Mon objectif</h2>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+  <label>Nom de la course
+    <input type="text" name="race_name" value="{{ settings.race_name }}" maxlength="80">
+  </label>
+  <label>Date de la course
+    <input type="date" name="race_date" required min="{{ today.isoformat() }}"
+           value="{{ settings.race_date.isoformat() if settings.race_date else '' }}">
+  </label>
+  <label><span>Volume hebdomadaire au pic : <output id="hours-out">{{ '%g' | format(settings.peak_hours) }}</output> h</span>
+    <input type="range" name="peak_hours" min="4" max="14" step="0.5" value="{{ settings.peak_hours }}"
+           oninput="document.getElementById('hours-out').value = this.value">
+  </label>
+  <p class="muted small">
+    Repères : 5-6 h pour finir sereinement, 7-9 h pour progresser, 10 h+ pour viser un chrono.
+    Le plan démarre progressivement (~55 % de ce volume) et dure au maximum 16 semaines.
+  </p>
+  <button class="btn" type="submit">{{ "Régénérer le plan" if settings.race_date else "Générer mon plan" }}</button>
+  {% if settings.race_date %}
+  <p class="muted small">Les séances déjà enregistrées dans le journal sont conservées.</p>
+  {% endif %}
+</form>
+
+{% endblock %}

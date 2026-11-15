@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Progression · Triathlon Trainer{% endblock %}
+{% block heading %}Progression{% endblock %}
+{% block content %}
+
+<section class="stats-row">
+  {% for sport, t in totals.items() %}
+  <div class="stat sport-{{ sport }}">
+    <span class="stat-label">{{ SPORT_ICONS[sport] }} {{ SPORT_LABELS[sport] }}</span>
+    <span class="stat-value">{{ t.minutes | duration }}</span>
+    <span class="muted">{{ t.sessions }} séance{{ 's' if t.sessions > 1 }} · {{ '%g' | format(t.km) }} km</span>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="card">
+  <h2 class="section-title">Volume hebdomadaire</h2>
+  {% if has_data %}
+    <div class="chart-wrap"><canvas id="weekly-chart" aria-label="Volume hebdomadaire par sport"></canvas></div>
+    <p class="muted small">Barres : minutes réalisées par sport. Ligne : volume prévu par le plan.</p>
+  {% else %}
+    <p class="muted">Pas encore de données.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2 class="section-title">Assiduité</h2>
+  <p><span class="stat-value">{{ compliance if compliance is not none else '—' }}{{ ' %' if compliance is not none }}</span>
+     <span class="muted">des séances prévues à ce jour ont été validées.</span></p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+{% if has_data %}
+<script src="/static/js/chart.umd.min.js"></script>
+<script src="/static/js/progress.js"></script>
+{% endif %}
+{% endblock %}

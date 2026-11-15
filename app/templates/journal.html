@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Journal · Triathlon Trainer{% endblock %}
+{% block heading %}Journal{% endblock %}
+{% block content %}
+
+{% if not logs %}
+  <section class="card">
+    <p>Aucune séance enregistrée. Utilise le bouton <strong>＋</strong> ou « Valider » sur une séance du plan.</p>
+  </section>
+{% else %}
+  <ul class="sessions">
+    {% for log in logs %}
+    <li class="session sport-{{ log.sport.value }}">
+      <div class="session-icon">{{ SPORT_ICONS[log.sport.value] }}</div>
+      <div class="session-body">
+        <div class="session-head">
+          <span class="session-date">{{ log.date | frdate }}</span>
+          {% if log.planned_id %}<span class="badge">plan</span>{% endif %}
+        </div>
+        <strong>{{ SPORT_LABELS[log.sport.value] }}</strong>
+        <span class="muted"> · {{ log.duration_min | duration }}
+          {%- if log.distance_km %} · {{ '%g' | format(log.distance_km) }} km{% endif %}
+          {%- set p = pace(log.sport, log.duration_min, log.distance_km) %}{% if p %} · {{ p }}{% endif %}
+        </span>
+        <div class="log-meta">
+          {% if log.rpe %}<span>Ressenti {{ log.rpe }}/10</span>{% endif %}
+          {% if log.avg_hr %}<span>❤️ {{ log.avg_hr }} bpm</span>{% endif %}
+        </div>
+        {% if log.notes %}<p class="session-desc">{{ log.notes }}</p>{% endif %}
+      </div>
+      <div class="session-action">
+        <button class="btn-icon" aria-label="Supprimer"
+                hx-delete="/journal/{{ log.id }}" hx-target="closest li" hx-swap="outerHTML"
+                hx-confirm="Supprimer cette séance ?">🗑️</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% endblock %}

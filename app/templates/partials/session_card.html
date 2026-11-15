@@ -1,0 +1,25 @@
+{# Carte d'une séance prévue. Variables : s (PlannedSession), done_ids, today #}
+{% set done = s.id in done_ids %}
+<li class="session sport-{{ s.sport.value }}{{ ' done' if done }}{{ ' today' if s.date == today }}">
+  <div class="session-icon">{{ SPORT_ICONS[s.sport.value] }}</div>
+  <div class="session-body">
+    <div class="session-head">
+      <span class="session-date">{{ s.date | frdate }}</span>
+      {% if s.intensity %}<span class="badge">{{ s.intensity }}</span>{% endif %}
+    </div>
+    <strong>{{ s.title }}</strong>
+    {% if s.duration_min %}<span class="muted"> · {{ s.duration_min | duration }}</span>{% endif %}
+    {% if s.description %}<p class="session-desc">{{ s.description }}</p>{% endif %}
+  </div>
+  {% if s.sport.value != 'rest' %}
+  <div class="session-action">
+    {% if done %}
+      <span class="check" title="Séance validée">✓</span>
+    {% else %}
+      <button class="btn-small"
+              hx-get="/journal/form?planned_id={{ s.id }}" hx-target="#dialog-body"
+              hx-on::after-request="document.getElementById('log-dialog').showModal()">Valider</button>
+    {% endif %}
+  </div>
+  {% endif %}
+</li>

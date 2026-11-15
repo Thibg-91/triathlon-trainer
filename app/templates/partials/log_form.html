@@ -1,0 +1,42 @@
+{# Formulaire de saisie d'une séance (affiché dans le <dialog>) #}
+<form hx-post="/journal" class="log-form">
+  <h2>{{ "Valider : " ~ planned.title if planned else "Nouvelle séance" }}</h2>
+  {% if planned %}<input type="hidden" name="planned_id" value="{{ planned.id }}">{% endif %}
+
+  <div class="grid-2">
+    <label>Date
+      <input type="date" name="date" required value="{{ (planned.date if planned else today).isoformat() }}">
+    </label>
+    <label>Sport
+      <select name="sport" required>
+        {% for sp in LOGGABLE_SPORTS %}
+        <option value="{{ sp.value }}" {{ 'selected' if planned and planned.sport == sp }}>
+          {{ SPORT_ICONS[sp.value] }} {{ SPORT_LABELS[sp.value] }}
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Durée (min)
+      <input type="number" name="duration_min" min="1" max="1440" required inputmode="numeric"
+             value="{{ planned.duration_min if planned and planned.duration_min else '' }}">
+    </label>
+    <label>Distance (km)
+      <input type="text" name="distance_km" inputmode="decimal" placeholder="ex. 1,5">
+    </label>
+    <label>FC moyenne
+      <input type="number" name="avg_hr" min="40" max="230" inputmode="numeric" placeholder="bpm">
+    </label>
+    <label><span>Ressenti <output id="rpe-out">6</output>/10</span>
+      <input type="range" name="rpe" min="1" max="10" value="6"
+             oninput="document.getElementById('rpe-out').value = this.value">
+    </label>
+  </div>
+  <label>Notes
+    <textarea name="notes" rows="2" placeholder="Sensations, météo, matériel…"></textarea>
+  </label>
+
+  <div class="form-actions">
+    <button type="button" class="btn-ghost" onclick="this.closest('dialog').close()">Annuler</button>
+    <button type="submit" class="btn">Enregistrer</button>
+  </div>
+</form>

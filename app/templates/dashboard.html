@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block heading %}{{ settings.race_name }}{% endblock %}
+{% block content %}
+
+{% if not settings.race_date %}
+  <section class="card hero">
+    <h2>Bienvenue 👋</h2>
+    <p>Indique la date de ton triathlon M et ton volume d'entraînement : l'appli génère ton plan semaine par semaine.</p>
+    <a class="btn" href="/settings">Configurer mon objectif</a>
+  </section>
+{% else %}
+  <section class="card hero">
+    <div class="countdown">
+      {% if days_left > 0 %}
+        <span class="big">J-{{ days_left }}</span>
+        <span class="muted">{{ settings.race_date | frdate }}</span>
+      {% elif days_left == 0 %}
+        <span class="big">C'est le jour J 🏁</span>
+      {% else %}
+        <span class="big">Course terminée 🎉</span>
+        <span class="muted">Configure un nouvel objectif dans les réglages.</span>
+      {% endif %}
+    </div>
+    <div class="distances">
+      <span>🏊 1,5 km</span><span>🚴 40 km</span><span>🏃 10 km</span>
+    </div>
+  </section>
+
+  {% if plan_start and today < plan_start %}
+  <section class="card">
+    <p>📅 Ton plan démarre le <strong>{{ plan_start | frdate }}</strong> — d'ici là, entretiens ta forme
+       avec 3 à 5 séances faciles par semaine et note-les dans le journal.</p>
+  </section>
+  {% endif %}
+
+  {% if current_week %}
+  {% set phase = week_sessions[0].phase.value %}
+  <section class="stats-row">
+    <div class="stat">
+      <span class="stat-label">Semaine</span>
+      <span class="stat-value">{{ current_week }}/{{ n_weeks }}</span>
+      <span class="phase phase-{{ phase }}">{{ PHASE_LABELS[phase] }}{{ ' · allégée' if week_sessions[0].recovery_week }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Volume semaine</span>
+      <span class="stat-value">{{ week_done | duration if week_done else "0 min" }}</span>
+      <span class="muted">sur {{ week_planned | duration }}</span>
+      <progress max="{{ week_planned or 1 }}" value="{{ week_done }}"></progress>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Assiduité</span>
+      <span class="stat-value">{{ compliance if compliance is not none else '—' }}{{ ' %' if compliance is not none }}</span>
+      <span class="muted">séances validées</span>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">{{ "Cette semaine" if not (plan_start and today < plan_start) else "Première semaine du plan" }}</h2>
+    <ul class="sessions">
+      {% for s in week_sessions %}
+        {% include "partials/session_card.html" %}
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+{% endif %}
+
+{% endblock %}
